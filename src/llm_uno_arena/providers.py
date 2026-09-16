@@ -19,7 +19,7 @@ SYSTEM_PROMPT = (
 )
 
 
-def get_openai_move(hand_description: str, top_card_description: str) -> Move:
+def get_openai_move(hand_description: str, top_card_description: str) -> tuple[Move, int, int]:
     response = _openai_client.responses.parse(
         model="gpt-5.6-luna",
         input=[
@@ -28,11 +28,11 @@ def get_openai_move(hand_description: str, top_card_description: str) -> Move:
         ],
         text_format=Move,
     )
-    return response.output_parsed
+    return response.output_parsed, response.usage.input_tokens, response.usage.output_tokens
 
 
 
-def get_claude_move(hand_description: str, top_card_description: str) -> Move:
+def get_claude_move(hand_description: str, top_card_description: str) -> tuple[Move, int, int]:
     response = _anthropic_client.messages.create(
         model="claude-haiku-4-5",
         max_tokens=300,
@@ -43,7 +43,8 @@ def get_claude_move(hand_description: str, top_card_description: str) -> Move:
         ],
     )
     raw = response.content[0].text
-    return Move.model_validate(_extract_last_json(raw))
+    move = Move.model_validate(_extract_last_json(raw))
+    return move, response.usage.input_tokens, response.usage.output_tokens
 
 def _extract_last_json(raw: str) -> dict:
     import json
@@ -54,7 +55,7 @@ def _extract_last_json(raw: str) -> dict:
 
 
 
-def get_gemini_move(hand_description: str, top_card_description: str) -> Move:
+def get_gemini_move(hand_description: str, top_card_description: str) -> tuple[Move, int, int]:
     response = _gemini_client.models.generate_content(
         model="gemini-3.5-flash",
         config={
@@ -64,4 +65,5 @@ def get_gemini_move(hand_description: str, top_card_description: str) -> Move:
         },
         contents=f"Your hand: {hand_description}\nTop card: {top_card_description}",
     )
-    return Move.model_validate_json(response.text)
+    move = Move.model_validate_json(response.text)
+    return move, response.usage_metadata.prompt_token_count, response.usage_metadata.candidates_token_count
