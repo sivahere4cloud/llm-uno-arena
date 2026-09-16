@@ -1,0 +1,23 @@
+[project]
+name = "llm-uno-arena"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "sivahere4cloud", email = "sivaganeshcloud@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=1.6.0",
+    "google-genai>=2.23.0",
+    "openai>=3.14.1",
+    "pydantic>=2.13.5",
+    "python-dotenv>=1.2.3",
+]
+
+[project.scripts]
+llm-uno-arena = "llm_uno_arena:main"
+
+[build-system]
+requires = ["uv_build>=0.12.13,<0.13.0"]
+build-backend = "uv_build"
