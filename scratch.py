@@ -1,7 +1,14 @@
-from llm_uno_arena.providers import get_claude_move, get_gemini_move
+from llm_uno_arena.players import Player
+from llm_uno_arena.cards import Card, Color, CardType
 
-hand = "0: Red 5, 1: Blue Skip, 2: Green 7"
-top_card = "Red 8"
+gpt_player = Player(name="GPT-Player", provider="openai")
 
-print(get_claude_move(hand, top_card))
-print(get_gemini_move(hand, top_card))
+hand = [
+    Card(Color.RED, CardType.NUMBER, 5),
+    Card(Color.BLUE, CardType.SKIP),
+    Card(Color.GREEN, CardType.NUMBER, 7),
+]
+top_card = Card(Color.RED, CardType.NUMBER, 8)
+
+move = gpt_player.decide_move(hand, top_card)
+print(move)
